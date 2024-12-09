@@ -13,8 +13,5 @@ const User = mongoose.model(
         user: Object,
         adopter: Object
     }, {timestamps: true})
-    //this parameter timestamp create two new fields in db
-    //1- createdAt when new data is created
-    //2- updatedAt when some data is updated
 )
 module.exports = User
