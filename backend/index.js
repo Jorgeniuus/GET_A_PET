@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const userRoutes = require('./routes/userRoutes')
+const petRoutes = require('./routes/petRoutes')
 const PORT = 5000
 
 const app = express()
@@ -10,5 +11,6 @@ app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 app.use(express.static('public'))
 
 app.use('/users', userRoutes)
+app.use('/pets', petRoutes)
 
 app.listen(PORT)
