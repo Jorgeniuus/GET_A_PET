@@ -215,4 +215,77 @@ module.exports = class PetController{
         await Pet.findByIdAndUpdate(id, updatedData)
         res.status(200).json({message: 'Pet updated successfully'})
     }
+    static async scheduleAdoption(req, res){
+        const id = req.params.id
+
+        //check if exists
+        const pet = await Pet.findOne({_id: id})
+
+        if(!pet){
+            res.status(404).json({message: 'Pet not found!'})
+            return
+        }
+
+        //check if logged in user registered the pet
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        if(pet.user._id.equals(user._id)){
+            res.status(422).json({
+                message: 'It is not posssible to schedule your own pet!'
+            })
+            return
+        }
+
+        //check if user has already scheedule a visit
+        if(pet.adopter){
+            if(pet.adopter._id.equals(user._id)){
+                res.status(422).json({
+                    message: 'You have already scheduled a visit for this pet!'
+                })
+                return
+            }
+        }
+
+        //add user to pet
+        pet.adopter = {
+            _id: user._id,
+            name: user.name,
+            image: user.image
+        }
+        await Pet.findByIdAndUpdate(id, pet)
+
+        res.status(200).json({
+            message: `The visit has been scheduled successfully. Contact ${pet.user.name} by phone at ${pet.user.phone}`
+        })
+    }
+    static async concludeAdoption(req, res){
+        const id = req.params.id
+
+        //check if exists
+        const pet = await Pet.findOne({_id: id})
+
+        if(!pet){
+            res.status(404).json({message: 'Pet not found!'})
+            return
+        }
+ 
+        //check if logged in user registered the pet
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        if(pet.user._id.toString() !== user._id.toString()){
+            res.status(422).json({
+                message: 'There was a problem. Please try again later'
+            })
+            return
+        }
+        pet.available = false
+
+        await Pet.findByIdAndUpdate(id, pet)
+
+        res.status(200).json({
+            message: 'Congratulations! You have successfully completed the adoption!'
+        })
+    }
 }
