@@ -4,7 +4,7 @@ const getToken = require('./get-token')
 //middleware to validate token
 const checkToken = (req, res, next) => {
     if(!req.headers.authorization){
-        return res.status(401).json({ message: 'Acess Denied!' })
+        return res.status(401).json({ message: 'Access Denied!' })
     }
 
     const token = getToken(req)

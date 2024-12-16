@@ -145,10 +145,74 @@ module.exports = class PetController{
             res.status(422).json({
                 message: 'There was a problem. Please try again later'
             })
+            return
         }
 
         await Pet.findByIdAndDelete(id)
         res.status(200).json({message: 'Pet removed successfully'})
+    }
+    static async updatePet(req, res){
+        const id = req.params.id
+        const {name, age, weight, color, available} = req.body
+        const images = req.files
+        const updatedData = {}
 
+        // check if pet exists
+        const pet = await Pet.findOne({_id: id})
+
+        if(!pet){
+            res.status(404).json({message: 'Pet not found!'})
+            return
+        }
+
+        //check if logged in user registered the pet
+        const token = getToken(req)
+        const user = await getUserByToken(token)
+
+        if(pet.user._id.toString() !== user._id.toString()){
+            res.status(422).json({
+                message: 'There was a problem. Please try again later'
+            })
+            return
+        }
+
+        //validations
+        if(!name){
+            res.status(422).json({message: 'Name is required!'})
+            return
+        } else{
+            updatedData.name = name
+        }
+        if(!age){
+            res.status(422).json({message: 'Age is required!'})
+            return
+        }else{
+            updatedData.age = age
+        }
+        if(!weight){
+            res.status(422).json({message: 'Weight is required!'})
+            return
+        }else{
+            updatedData.weight = weight
+        }
+        if(!color){
+            res.status(422).json({message: 'Color is required!'})
+            return
+        } else{
+            updatedData.color = color
+        }
+
+        if(images.length === 0){
+            res.status(422).json({message: 'Image is required!'})
+            return
+        }else{
+            updatedData.images = []
+            images.map((image) => {
+                updatedData.images.push(image.filename)
+            })
+        }
+
+        await Pet.findByIdAndUpdate(id, updatedData)
+        res.status(200).json({message: 'Pet updated successfully'})
     }
 }
