@@ -8,10 +8,13 @@ import Register from './components/pages/Auth/Register';
 import Login from './components/pages/Auth/Login';
 import Home from './components/pages/Home';
 
+import { UserProvider } from './context/UserContext';
+
 function App() {
   return (
     <Router>
-      <Navbar/>
+      <UserProvider>
+        <Navbar/>
         <Container>
           <Switch>
             <Route path="/login">
@@ -25,7 +28,8 @@ function App() {
             </Route>
           </Switch>
         </Container>
-      <Footer/>
+        <Footer/>
+      </UserProvider>
     </Router>
   );
 }
