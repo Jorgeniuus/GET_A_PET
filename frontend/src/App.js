@@ -4,14 +4,20 @@ import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
 import Container from './components/layout/Container';
 
+import Message from './components/layout/Message';
+
 import Register from './components/pages/Auth/Register';
 import Login from './components/pages/Auth/Login';
 import Home from './components/pages/Home';
 
+import { UserProvider } from './context/UserContext';
+
 function App() {
   return (
     <Router>
-      <Navbar/>
+      <UserProvider>
+        <Navbar/>
+        <Message/>
         <Container>
           <Switch>
             <Route path="/login">
@@ -25,7 +31,8 @@ function App() {
             </Route>
           </Switch>
         </Container>
-      <Footer/>
+        <Footer/>
+      </UserProvider>
     </Router>
   );
 }
